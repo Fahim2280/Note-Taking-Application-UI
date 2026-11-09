@@ -71,38 +71,44 @@ export default function InterestsView({ onSelectUserForLookup }) {
                 </tr>
               </thead>
               <tbody>
-                {interestGroups.map((group) => (
-                  <tr key={group._id}>
-                    <td>
-                      <span className="interest-tag">&#127991; {group._id}</span>
-                    </td>
-                    <td>
-                      <span className="badge badge-primary">{group.count} user{group.count !== 1 ? 's' : ''}</span>
-                    </td>
-                    <td>
-                      <div className="user-chips-container">
-                        {group.users && group.users.map((u) => (
-                          <div key={u._id} className="user-chip">
-                            <span className="user-chip-name">{u.name}</span>
-                            <span className="user-chip-email">&lt;{u.email}&gt;</span>
-                            <span className={`role-badge ${u.role === 'Admin' ? 'role-admin' : 'role-user'}`} style={{ fontSize: '10px', padding: '1px 5px' }}>
-                              {u.role}
-                            </span>
-                            {onSelectUserForLookup && (
-                              <button
-                                className="chip-lookup-btn"
-                                onClick={() => onSelectUserForLookup(u._id)}
-                                title="Inspect this user in Scenario 2 ($lookup)"
-                              >
-                                $lookup &rarr;
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {interestGroups.map((group) => {
+                  const count = group.userCount ?? group.count ?? (group.users ? group.users.length : 0);
+
+                  return (
+                    <tr key={group._id}>
+                      <td>
+                        <span className="interest-tag">&#127991; {group._id}</span>
+                      </td>
+                      <td>
+                        <span className="badge badge-primary">{count} user{count !== 1 ? 's' : ''}</span>
+                      </td>
+                      <td>
+                        <div className="user-chips-container">
+                          {group.users && group.users.map((u) => (
+                            <div key={u._id} className="user-chip">
+                              <span className="user-chip-name">{u.name}</span>
+                              <span className="user-chip-email">&lt;{u.email}&gt;</span>
+                              {u.role && (
+                                <span className={`role-badge ${u.role === 'Admin' ? 'role-admin' : 'role-user'}`} style={{ fontSize: '10px', padding: '1px 5px' }}>
+                                  {u.role}
+                                </span>
+                              )}
+                              {onSelectUserForLookup && (
+                                <button
+                                  className="chip-lookup-btn"
+                                  onClick={() => onSelectUserForLookup(u._id)}
+                                  title="Inspect this user in Scenario 2 ($lookup)"
+                                >
+                                  $lookup &rarr;
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
