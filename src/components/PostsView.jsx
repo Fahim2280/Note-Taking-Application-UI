@@ -277,28 +277,42 @@ export default function PostsView({ prefilledUserId }) {
                 </tr>
               </thead>
               <tbody>
-                {posts.map((post) => (
-                  <tr key={post._id}>
-                    <td><strong>{post.title}</strong></td>
-                    <td><span className="truncate-text">{post.body || post.content}</span></td>
-                    <td>
-                      <code>{post.authorId}</code>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => {
-                          setTargetUserId(post.authorId);
-                          handleRunScenario2(post.authorId);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        title="Query this author via Scenario 2 $lookup"
-                      >
-                        $lookup Author
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {posts.map((post) => {
+                  const authorObj = typeof post.authorId === 'object' && post.authorId !== null ? post.authorId : null;
+                  const authorIdStr = authorObj ? authorObj._id : String(post.authorId || '');
+                  const authorName = authorObj ? authorObj.name : null;
+                  const authorEmail = authorObj ? authorObj.email : null;
+
+                  return (
+                    <tr key={post._id}>
+                      <td><strong>{post.title}</strong></td>
+                      <td><span className="truncate-text">{post.body || post.content}</span></td>
+                      <td>
+                        {authorName ? (
+                          <div>
+                            <strong>{authorName}</strong>
+                            <div><small className="text-muted">{authorEmail}</small></div>
+                          </div>
+                        ) : (
+                          <code>{authorIdStr}</code>
+                        )}
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => {
+                            setTargetUserId(authorIdStr);
+                            handleRunScenario2(authorIdStr);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          title="Query this author via Scenario 2 $lookup"
+                        >
+                          $lookup Author
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

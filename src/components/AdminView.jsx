@@ -419,13 +419,18 @@ export default function AdminView({ onSelectUserForLookup }) {
                     <td><span className="truncate-text">{n.content}</span></td>
                     <td>
                       <div>
-                        {n.owner ? (
+                        {typeof n.userId === 'object' && n.userId !== null ? (
+                          <>
+                            <strong>{n.userId.name}</strong>
+                            <div><small className="text-muted">{n.userId.email}</small></div>
+                          </>
+                        ) : n.owner ? (
                           <>
                             <strong>{n.owner.name}</strong>
                             <div><small className="text-muted">{n.owner.email}</small></div>
                           </>
                         ) : (
-                          <code>{n.userId}</code>
+                          <code>{String(n.userId || '')}</code>
                         )}
                       </div>
                     </td>
