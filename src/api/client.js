@@ -3,8 +3,16 @@ const API_BASE_URL =
 
 export const getBaseUrl = () => API_BASE_URL;
 
+const getSafeToken = () => {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage.getItem('token') : null;
+  } catch {
+    return null;
+  }
+};
+
 export async function apiFetch(endpoint, options = {}) {
-  const token = localStorage.getItem('token');
+  const token = getSafeToken();
   const headers = {
     'Content-Type': 'application/json',
     ...(options.headers || {})

@@ -2,10 +2,35 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
+const safeStorage = {
+  getItem: (key) => {
+    try {
+      return typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
+    } catch (e) {
+      console.warn('localStorage read error:', e);
+      return null;
+    }
+  },
+  setItem: (key, val) => {
+    try {
+      if (typeof window !== 'undefined') window.localStorage.setItem(key, val);
+    } catch (e) {
+      console.warn('localStorage write error:', e);
+    }
+  },
+  removeItem: (key) => {
+    try {
+      if (typeof window !== 'undefined') window.localStorage.removeItem(key);
+    } catch (e) {
+      console.warn('localStorage remove error:', e);
+    }
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
-      const savedUser = localStorage.getItem('user');
+      const savedUser = safeStorage.getItem('user');
       return savedUser ? JSON.parse(savedUser) : null;
     } catch {
       return null;
@@ -13,27 +38,27 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [token, setToken] = useState(() => {
-    return localStorage.getItem('token') || null;
+    return safeStorage.getItem('token') || null;
   });
 
   const login = (newToken, newUser) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
+    safeStorage.setItem('token', newToken);
+    safeStorage.setItem('user', JSON.stringify(newUser));
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    safeStorage.removeItem('token');
+    safeStorage.removeItem('user');
   };
 
   const updateUser = (updatedFields) => {
     setUser((prev) => {
       const next = { ...prev, ...updatedFields };
-      localStorage.setItem('user', JSON.stringify(next));
+      safeStorage.setItem('user', JSON.stringify(next));
       return next;
     });
   };
